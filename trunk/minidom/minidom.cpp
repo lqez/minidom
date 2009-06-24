@@ -166,12 +166,12 @@ void node::print( ostream& stream, bool useIndent, size_t indent )
 
 	if( NL(attrList_)->size() > 0 )
 	{
-		cout << "[ ";
+		stream << "[ ";
 		for( NLI iter = NL(attrList_)->begin(); iter != NL(attrList_)->end(); ++iter )
 			stream << (*iter)->k_ << "=\"" << (*iter)->v_ << "\" ";
-		cout << "]";
+		stream << "]";
 	}
-	cout << "\n";
+	stream << "\n";
 	for( NLI iter = NL(childList_)->begin(); iter != NL(childList_)->end(); ++iter )
 		(*iter)->print( stream, useIndent, indent+1 );
 }
@@ -391,12 +391,12 @@ void selector::printResult( ostream& stream )
 		stream << (*iter)->k_ << " = " << (*iter)->v_ << " (" << (*iter)->path_ << ") ";
 		if( NL((*iter)->attrList_)->size() > 0 )
 		{
-			cout << "[ ";
+			stream << "[ ";
 			for( NLI iter2 = NL((*iter)->attrList_)->begin(); iter2 != NL((*iter)->attrList_)->end(); ++iter2 )
 				stream << (*iter2)->k_ << "=\"" << (*iter2)->v_ << "\" ";
-			cout << "]";
+			stream << "]";
 		}
-		cout << "\n";
+		stream << "\n";
 	}
 }
 
