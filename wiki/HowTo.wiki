@@ -33,6 +33,23 @@ if( s.size() >= 2 )
 }
 }}}
 
+== Create a node ==
+{{{
+// Simple
+dom.add( "string", "1234" );
+dom.add( "integer", 1234 );
+
+// Complex
+minidom::selector s = dom.query( "book" );
+size_t books = s.size();
+int totalpages = 0;
+
+while( books-- )
+	totalpages += s.at(books)->get( "pagecount" )->ToInt();
+
+dom.add( "totalpages", totalpages );
+}}}
+
 == Dump ==
 === Dump into a file ===
 {{{
