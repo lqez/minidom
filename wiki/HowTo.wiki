@@ -28,7 +28,7 @@ dom.get( "/files/count" )->ToInt();
 minidom::selector s = dom.query( "book" );
 if( s.size() >= 2 )
 {
-	s.at(1)->get("@style")->toChars();
+	s.at(1)->get( "@style" )->toChars();
 	s.printResult();
 }
 }}}
@@ -37,7 +37,7 @@ if( s.size() >= 2 )
 {{{
 // Simple
 dom.add( "string", "1234" );
-dom.add( "integer", 1234 );
+dom.add( "an integer", 1234 ).add( "child integer", 5678 );
 
 // Complex
 minidom::selector s = dom.query( "book" );
