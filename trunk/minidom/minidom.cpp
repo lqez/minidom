@@ -305,8 +305,8 @@ node* node::add( const char* k, const char* v, bool bAttribute )
 
 node* node::add( const char* k, int v, bool bAttribute )
 {
-	char buf[32];
-	itoa( v, buf, 10 );
+	char buf[64];
+	sprintf( buf, "%d", v );
 	return add( k, buf, bAttribute );
 }
 
