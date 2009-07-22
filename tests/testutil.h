@@ -10,6 +10,8 @@
 #pragma warning ( disable : 4996 )
 #else
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 #endif
 
 #ifndef O_BINARY
