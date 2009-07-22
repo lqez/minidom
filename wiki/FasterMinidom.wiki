@@ -1,0 +1,9 @@
+#summary How to make minidom faster
+
+= Strategy =
+  * Use std::vector instead of std::list.
+  * Use custom data structure instead of std::map.
+  * Do not copy strings.
+
+= goal =
+  * make faster than tinyxml parser.
