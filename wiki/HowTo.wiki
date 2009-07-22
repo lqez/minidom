@@ -1,5 +1,5 @@
+#summary This page shows how-to-use minidom library.
 #labels howto
-#This page shows how-to-use minidom library.
 
 minidom is quick-and-dirty, not elegant dom/path c++ library.
 ----
