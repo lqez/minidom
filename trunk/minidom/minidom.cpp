@@ -52,6 +52,7 @@ THE SOFTWARE.
 
 #else
 #include <unistd.h>
+#include <string.h>
 #endif
 
 #ifndef O_BINARY

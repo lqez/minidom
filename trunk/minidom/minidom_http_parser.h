@@ -155,7 +155,7 @@ namespace minidom
 			case CONTENT:
 				{
 					char bufSize[64];
-					_itoa( buf - offset, bufSize, 10 );
+					sprintf( bufSize, "%d", buf-offset );
 					strK = "offset";
 					strV = bufSize;
 					elemNode = createNode( convertString(strK), contentNode, true );
