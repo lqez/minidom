@@ -33,10 +33,10 @@ namespace minidom
 #if defined( MINIDOM_SUPPORT_INI )
 		size_t s = 0;
 		size_t len;
-		char tmp[4096];
+		char tmp[MINIDOM_BUFFER_SIZE];
 #if defined( MINIDOM_SUPPORT_ICONV )
 		size_t len_conv;
-		char tmp_conv[8192];
+		char tmp_conv[MINIDOM_BUFFER_SIZE*2];
 #endif
 		list<pair<node*,node*> > stack;
 		if( NL(this->childList_)->size() == 0 )

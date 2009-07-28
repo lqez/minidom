@@ -63,6 +63,8 @@ THE SOFTWARE.
 	#define MINIDOM_TARGET_ENCODING "iso-8859-1"
 #endif
 
+const int MINIDOM_BUFFER_SIZE = 4096;
+
 #if defined(MINIDOM_PLATFORM_WINDOWS)
 #pragma warning ( disable : 4819 )
 #pragma warning ( disable : 4996 )
@@ -532,7 +534,7 @@ inline string& doc::convertString( string& str )
 	if( !iconv_ )
 		return str;
 
-	char buf[4096];
+	char buf[MINIDOM_BUFFER_SIZE];
 #if defined( MINIDOM_PLATFORM_WINDOWS )
 	const char *src = str.c_str();
 #else
@@ -540,7 +542,7 @@ inline string& doc::convertString( string& str )
 #endif
 	char *dst = &buf[0];
 	size_t srcSize = str.size();
-	size_t dstSize = 4096;
+	size_t dstSize = MINIDOM_BUFFER_SIZE;
 	iconv( iconv_, &src, &srcSize, &dst, &dstSize );
 	*dst = '\0';
 	str = buf;
