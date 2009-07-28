@@ -23,6 +23,7 @@ foreach( DOCTYPE ${SUPPORT_DOCTYPE} )
 endforeach( DOCTYPE ${SUPPORT_DOCTYPE} )
 
 add_definitions( -DMINIDOM_TARGET_ENCODING="${DEFAULT_ENCODING}" )
+add_definitions( -DMINIDOM_BUFFER_SIZE="${TEMP_BUFFER_SIZE}" )
 
 if( ENABLE_STL_MAP )
 	add_definitions( -DMINIDOM_ENABLE_MAP )
