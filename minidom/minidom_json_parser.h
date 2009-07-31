@@ -34,10 +34,10 @@ namespace minidom
 		size_t s = 0;
 		size_t len;
 		int nBracketing = 0;
-		char tmp[MINIDOM_BUFFER_SIZE];
+		char tmp[minidom_buffer_size];
 #if defined( MINIDOM_SUPPORT_ICONV )
 		size_t len_conv;
-		char tmp_conv[MINIDOM_BUFFER_SIZE*2];
+		char tmp_conv[minidom_buffer_size*2];
 #endif
 		list<pair<node*,node*> > stack;
 		if( NL(this->childList_)->size() == 0 )
