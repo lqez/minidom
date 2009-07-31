@@ -22,6 +22,10 @@ set( ENABLE_DUMP OFF
 	CACHE BOOL "Set on to enable method that dump(save) dom into string or file."
 	)
 
+set( TEMP_BUFFER_SIZE 4096
+	CACHE STRING "Buffer size for element name and its value while minidom parsing & dumping."
+	)
+
 set( SUPPORT_DOCTYPE XML
 	CACHE STRING "Build with specified doctypes, separate with semicolon. XML;INI;JSON;HTTP;NKV are supported."
 	)
