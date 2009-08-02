@@ -47,7 +47,11 @@ int main()
 	string CRLF;
 
 	if( indent_and_linefeed )
+#ifdef WIN32
+		CRLF = "\r\n";
+#else
 		CRLF = "\n";
+#endif
 
 	// top
 	randomizedString( name, 1, max_element_name );
