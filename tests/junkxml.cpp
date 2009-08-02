@@ -21,7 +21,8 @@ const size_t max_attribute = 3+1; /*(0 to 3)*/
 const size_t max_attribute_name = 8;
 const size_t max_attribute_value = 12;
 const size_t max_value = 100;
-const bool   indent_and_linefeed = false;
+const string tab = "  ";
+const bool   indent_and_linefeed = true;
 
 void randomizedString( string& str, size_t min, size_t max )
 {
@@ -33,6 +34,15 @@ void randomizedString( string& str, size_t min, size_t max )
 	{
 		str += rand()%26+((rand()%2)?65:97);
 	}
+}
+
+inline void print_indent( size_t i )
+{
+	if( !indent_and_linefeed )
+		return;
+
+	while( i-- )
+		cout << tab;
 }
 
 int main()
@@ -60,12 +70,7 @@ int main()
 
 	while( nodes < max_node )
 	{
-		if( indent_and_linefeed )
-		{
-			indent = stack.size();
-			while( indent-- )
-				cout << "  ";
-		}
+		print_indent( stack.size() );
 
 		// element
 		randomizedString( name, 1, max_element_name );
@@ -93,9 +98,7 @@ int main()
 
 			while( ( rand()%2 == 0 ) && ( stack.size() >= 2 ) )
 			{
-				indent = stack.size();
-				while( --indent && indent_and_linefeed )
-					cout << "  ";
+				print_indent( stack.size()-1 );
 				cout << "</" << *stack.rbegin() << ">" << CRLF;
 				stack.pop_back();
 			}
@@ -108,8 +111,7 @@ int main()
 	// close all
 	while( ( indent = stack.size() ) )
 	{
-		while( --indent && indent_and_linefeed )
-			cout << "  ";
+		print_indent( --indent );
 		cout << "</" << *stack.rbegin() << ">" << CRLF;
 		stack.pop_back();
 	}
