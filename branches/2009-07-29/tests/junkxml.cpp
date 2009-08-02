@@ -21,7 +21,7 @@ const size_t max_attribute = 3+1; /*(0 to 3)*/
 const size_t max_attribute_name = 8;
 const size_t max_attribute_value = 12;
 const size_t max_value = 100;
-const bool   indent_and_linefeed = true;
+const bool   indent_and_linefeed = false;
 
 void randomizedString( string& str, size_t min, size_t max )
 {
@@ -90,7 +90,7 @@ int main()
 			while( ( rand()%2 == 0 ) && ( stack.size() >= 2 ) )
 			{
 				indent = stack.size();
-				while( --indent )
+				while( --indent && indent_and_linefeed )
 					cout << "  ";
 				cout << "</" << *stack.rbegin() << ">" << CRLF;
 				stack.pop_back();
@@ -104,7 +104,7 @@ int main()
 	// close all
 	while( ( indent = stack.size() ) )
 	{
-		while( --indent )
+		while( --indent && indent_and_linefeed )
 			cout << "  ";
 		cout << "</" << *stack.rbegin() << ">" << CRLF;
 		stack.pop_back();
