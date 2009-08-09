@@ -30,10 +30,10 @@ void randomizedString( string& str, size_t min, size_t max )
 
 	str.clear();
 	str.reserve(min);
-	while( min-- )
+	do
 	{
 		str += rand()%26+((rand()%2)?65:97);
-	}
+	} while( --min );
 }
 
 inline void print_indent( size_t i )
@@ -41,8 +41,10 @@ inline void print_indent( size_t i )
 	if( !indent_and_linefeed )
 		return;
 
-	while( i-- )
+	do
+	{
 		cout << tab;
+	} while( --i );
 }
 
 int main()
