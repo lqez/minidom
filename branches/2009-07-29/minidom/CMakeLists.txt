@@ -29,10 +29,6 @@ if( ENABLE_STL_MAP )
 	add_definitions( -DMINIDOM_ENABLE_MAP )
 endif( ENABLE_STL_MAP )
 
-if( ENABLE_DOM_DEBUG )
-	add_definitions( -DMINIDOM_DEBUG )
-endif( ENABLE_DOM_DEBUG )
-
 if( ENABLE_DUMP )
 	add_definitions( -DMINIDOM_ENABLE_DUMP )
 endif( ENABLE_DUMP )

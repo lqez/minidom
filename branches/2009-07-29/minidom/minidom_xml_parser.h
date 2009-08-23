@@ -148,7 +148,7 @@ namespace minidom
 
 		node* elemNode = this;
 		node* attrNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		
 		while( *buf )
 		{
@@ -165,7 +165,7 @@ namespace minidom
 			case ELEMENT_NAME:
 				if( ( c == ' ' ) || ( c == '\t' ) || ( c  == '>' ) )
 				{
-					elemNode = createNode( convertString(strKey), elemNode );
+					elemNode = elemNode->add( convertString(strKey) );
 					status = ( c == '>' )?TEXT:ATTRIBUTE_NAME;
 					strKey = "";
 					strValue = "";
@@ -189,7 +189,7 @@ namespace minidom
 			case ATTRIBUTE_NAME:
 				if( ( c == '=' ) || ( ( ( c == ' ' ) || ( c == '>' ) ) && ( strKey.size() != 0 ) ) )
 				{
-					attrNode = createNode( convertString(strKey), elemNode, true );
+					attrNode = elemNode->add( convertString(strKey), "", true );
 					if( c == ' ' )
 						status = ATTRIBUTE_NAME;
 					else if( c == '>' )

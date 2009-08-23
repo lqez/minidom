@@ -15,10 +15,6 @@
 #include "minidom_error.h"
 
 #include <list>
-#include <vector>
-#ifdef MINIDOM_ENABLE_MAP
-#include <map>
-#endif
 #include <algorithm>
 
 
@@ -66,20 +62,6 @@
 using namespace std;
 using namespace minidom;
 
-// real-type for STL
-typedef std::list<node*> NodeList;
-typedef std::list<node*>::iterator NLI;
-typedef std::vector<node*> NodeVector;
-typedef std::vector<node*>::iterator NVI;
-#define NL(X) ((NodeList*)(X))
-#define NV(X) ((NodeVector*)(X))
-
-#ifdef MINIDOM_ENABLE_MAP
-typedef std::multimap<std::string,node*> NodeMap;
-typedef std::multimap<std::string,node*>::iterator NMI;
-#define NM(X) ((NodeMap*)(X))
-#endif
-
 #if defined( MINIDOM_ENABLE_DUMP )
 char* strnpad( char* c, const char* s, size_t n )
 {
@@ -121,23 +103,33 @@ bool algorithm::reverse_compare( const string& dst, const string& src, size_t ju
 }
 
 node::node()
+:next_(0),prev_(0),parent_(0)
 {
-	k_ = v_ = path_ = "";
-	next_ = prev_ = parent_ = NULL;
-
-	attrList_ = new NodeList();
-	childList_ = new NodeList();
 }
 
 node::~node()
 {
-	k_ = v_ = path_ = "";
+	k_.clear();
+	path_.clear();
+
 	next_ = prev_ = parent_ = NULL;
 
-	NL(attrList_)->clear();
-	NL(childList_)->clear();
-	delete( NL(attrList_) );
-	delete( NL(childList_) );
+	clear();
+}
+
+void node::clear()
+{
+	v_.clear();
+
+	NVI iterA = attrVec_.begin();
+	while( iterA != attrVec_.end() )
+		delete( *iterA );
+	attrVec_.clear();
+
+	NVI iterC = childVec_.begin();
+	while( iterC != childVec_.end() )
+		delete( *iterC );
+	childVec_.clear();
 }
 
 void node::print( ostream& stream, bool useIndent, size_t indent )
@@ -153,56 +145,56 @@ void node::print( ostream& stream, bool useIndent, size_t indent )
 		stream << path_ << " = " << v_;
 	}
 
-	if( NL(attrList_)->size() > 0 )
+	if( attrVec_.size() > 0 )
 	{
 		stream << "[ ";
-		for( NLI iter = NL(attrList_)->begin(); iter != NL(attrList_)->end(); ++iter )
+		for( NVI iter = attrVec_.begin(); iter != attrVec_.end(); ++iter )
 			stream << (*iter)->k_ << "=\"" << (*iter)->v_ << "\" ";
 		stream << "]";
 	}
 	stream << "\n";
-	for( NLI iter = NL(childList_)->begin(); iter != NL(childList_)->end(); ++iter )
+	for( NVI iter = childVec_.begin(); iter != childVec_.end(); ++iter )
 		(*iter)->print( stream, useIndent, indent+1 );
 }
 
 node* node::firstChild()
 {
-	if( NL(childList_)->size() == 0 )
+	if( childVec_.size() == 0 )
 		return NULL;
-	return *NL(childList_)->begin();
+	return *childVec_.begin();
 }
 
 node* node::lastChild()
 {
-	if( NL(childList_)->size() == 0 )
+	if( childVec_.size() == 0 )
 		return NULL;
-	return *NL(childList_)->rbegin();
+	return *childVec_.rbegin();
 }
 
 node* node::firstAttr()
 {
-	if( NL(attrList_)->size() == 0 )
+	if( attrVec_.size() == 0 )
 		return NULL;
-	return *NL(attrList_)->begin();
+	return *attrVec_.begin();
 }
 
 node* node::lastAttr()
 {
-	if( NL(attrList_)->size() == 0 )
+	if( attrVec_.size() == 0 )
 		return NULL;
-	return *NL(attrList_)->rbegin();
+	return *attrVec_.rbegin();
 }
 
 void node::addChild( node* child )
 {
 	child->parent_ = this;
-	if( NL(childList_)->size() != 0 )
+	if( childVec_.size() != 0 )
 	{
-		node* endOfChild = *NL(childList_)->rbegin();
+		node* endOfChild = *childVec_.rbegin();
 		endOfChild->next_ = child;
 		child->prev_ = endOfChild;
 	}
-	NL(childList_)->push_back( child );
+	childVec_.push_back( child );
 
 	child->path_ = path_ + "/" + child->k_;
 }
@@ -210,13 +202,13 @@ void node::addChild( node* child )
 void node::addAttr( node* attr )
 {
 	attr->parent_ = this;
-	if( NL(attrList_)->size() != 0 )
+	if( attrVec_.size() != 0 )
 	{
-		node* endOfAttr = *NL(attrList_)->rbegin();
+		node* endOfAttr = *attrVec_.rbegin();
 		endOfAttr->next_ = attr;
 		attr->prev_ = endOfAttr;
 	}
-	NL(attrList_)->push_back( attr );
+	attrVec_.push_back( attr );
 
 	attr->path_ = path_ + "@" + attr->k_;
 }
@@ -249,9 +241,9 @@ node* node::getNode( const std::string& path, size_t no, bool getCount )
 	while( nodes.size() != 0 )
 	{
 		node* a = nodes.front();
-		for( NLI iter = NL(a->childList_)->begin(); iter != NL(a->childList_)->end(); ++iter )
+		for( NVI iter = a->childVec_.begin(); iter != a->childVec_.end(); ++iter )
 			nodes.push_back( *iter );
-		for( NLI iter = NL(a->attrList_)->begin(); iter != NL(a->attrList_)->end(); ++iter )
+		for( NVI iter = a->attrVec_.begin(); iter != a->attrVec_.end(); ++iter )
 			nodes.push_back( *iter );
 
 		if( cf( a->path_, path, path_.size() ) )
@@ -282,12 +274,6 @@ node* node::add( const char* k, const char* v, bool bAttribute )
 		addAttr( newNode );
 	else
 		addChild( newNode );
-
-#ifdef MINIDOM_ENABLE_MAP
-	NM(doc_->nodes_)->insert( make_pair( newNode->path_, newNode ) );
-#else
-	NL(doc_->nodes_)->push_back( newNode );
-#endif
 
 	return newNode;
 }
@@ -357,31 +343,28 @@ double node::toDouble()
 
 selector::selector()
 {
-	nodeVec_ = new NodeVector();
 }
 
 selector::~selector()
 {
-	NV(nodeVec_)->clear();
-	delete( NV(nodeVec_) );
 }
 
 node* selector::at( size_t i )
 {
-	if( ( i < 0 ) || ( i >= NV(nodeVec_)->size() ) )
+	if( ( i < 0 ) || ( i >= nodeVec_.size() ) )
 		return NULL;
-	return (*NV(nodeVec_))[i];
+	return (nodeVec_)[i];
 }
 
 void selector::printResult( ostream& stream )
 {
-	for( NVI iter = NV(nodeVec_)->begin(); iter != NV(nodeVec_)->end(); ++iter )
+	for( NVI iter = nodeVec_.begin(); iter != nodeVec_.end(); ++iter )
 	{
 		stream << (*iter)->k_ << " = " << (*iter)->v_ << " (" << (*iter)->path_ << ") ";
-		if( NL((*iter)->attrList_)->size() > 0 )
+		if( (*iter)->attrVec_.size() > 0 )
 		{
 			stream << "[ ";
-			for( NLI iter2 = NL((*iter)->attrList_)->begin(); iter2 != NL((*iter)->attrList_)->end(); ++iter2 )
+			for( NVI iter2 = (*iter)->attrVec_.begin(); iter2 != (*iter)->attrVec_.end(); ++iter2 )
 				stream << (*iter2)->k_ << "=\"" << (*iter2)->v_ << "\" ";
 			stream << "]";
 		}
@@ -391,7 +374,7 @@ void selector::printResult( ostream& stream )
 
 size_t selector::size()
 {
-	return NV(nodeVec_)->size();
+	return nodeVec_.size();
 }
 
 int selector::query( const string& query, selector* s )
@@ -401,10 +384,10 @@ int selector::query( const string& query, selector* s )
 	if( s == 0 )
 		return MINIDOM_ERROR_NullPointerBuffer;
 
-	NodeList queue;
+	list<node*> queue;
 	list<size_t> pqueue;
 	
-	for( NVI iter = NV(nodeVec_)->begin(); iter != NV(nodeVec_)->end(); ++iter )
+	for( NVI iter = nodeVec_.begin(); iter != nodeVec_.end(); ++iter )
 	{
 		queue.push_back( *iter );
 		pqueue.push_back( (*iter)->path_.size() );
@@ -421,14 +404,14 @@ int selector::query( const string& query, selector* s )
 		node* a = queue.front();
 		size_t prefix = pqueue.front();
 
-		for( NLI iter = NL(a->childList_)->begin(); iter != NL(a->childList_)->end(); ++iter )
+		for( NVI iter = a->childVec_.begin(); iter != a->childVec_.end(); ++iter )
 		{
 			queue.push_back( *iter );
 			pqueue.push_back( prefix );
 		}
 
 		if( cf( &a->path_[prefix], query, 0 ) )
-			NV(s->nodeVec_)->push_back( a );
+			s->nodeVec_.push_back( a );
 
 		queue.pop_front();
 		pqueue.pop_front();
@@ -443,10 +426,10 @@ selector& selector::query( const string& query )
 		return *this;
 
 	selector* s = new selector();
-	NodeList queue;
+	list<node*> queue;
 	list<size_t> pqueue;
 	
-	for( NVI iter = NV(nodeVec_)->begin(); iter != NV(nodeVec_)->end(); ++iter )
+	for( NVI iter = nodeVec_.begin(); iter != nodeVec_.end(); ++iter )
 	{
 		queue.push_back( *iter );
 		pqueue.push_back( (*iter)->path_.size() );
@@ -463,14 +446,14 @@ selector& selector::query( const string& query )
 		node* a = queue.front();
 		size_t prefix = pqueue.front();
 
-		for( NLI iter = NL(a->childList_)->begin(); iter != NL(a->childList_)->end(); ++iter )
+		for( NVI iter = a->childVec_.begin(); iter != a->childVec_.end(); ++iter )
 		{
 			queue.push_back( *iter );
 			pqueue.push_back( prefix );
 		}
 
 		if( cf( &a->path_[prefix], query, 0 ) )
-			NV(s->nodeVec_)->push_back( a );
+			s->nodeVec_.push_back( a );
 
 		queue.pop_front();
 		pqueue.pop_front();
@@ -480,14 +463,8 @@ selector& selector::query( const string& query )
 }
 
 doc::doc()
-:nodes_(0), iconv_(0)
+:iconv_(0)
 {
-	#ifdef MINIDOM_ENABLE_MAP
-		nodes_ = new NodeMap();
-	#else
-		nodes_ = new NodeList();
-	#endif
-
 	doc_ = this;
 	srcEncoding_ = MINIDOM_TARGET_ENCODING;
 	dstEncoding_ = MINIDOM_TARGET_ENCODING;
@@ -496,14 +473,6 @@ doc::doc()
 doc::~doc()
 {
 	clear();
-	if( nodes_ )
-	{
-#ifdef MINIDOM_ENABLE_MAP
-		delete( NM(nodes_) );
-#else
-		delete( NL(nodes_) );
-#endif
-	}
 
 #ifdef MINIDOM_ENABLE_ICONV
 	if( iconv_ )
@@ -674,78 +643,4 @@ int doc::loadFile( DOCTYPE type, const string& filename, const string targetEnco
 	close( h );
 
 	return res;
-}
-
-#ifdef MINIDOM_ENABLE_MAP
-node* doc::getNode( std::string query, size_t no, bool getCount )
-{
-	if( getCount )
-		return (node*)NM(nodes_)->count( query );
-
-	pair<NMI,NMI> ret = NM(nodes_)->equal_range( query );
-	size_t c = 0;
-	NMI iter = ret.first;
-	while( iter != ret.second )
-	{
-		if( no == c )
-			return iter->second;
-		++c;
-		++iter;
-	}
-	return NULL;
-}
-#else
-inline node* doc::getNode( std::string query, size_t no, bool getCount )
-{
-	return node::getNode( query, no, getCount );
-}
-#endif
-
-void doc::clear()
-{
-	NV(nodeVec_)->clear();
-
-#ifdef MINIDOM_ENABLE_MAP
-	NMI iter = NM(nodes_)->begin();
-	while( iter != NM(nodes_)->end() )
-	{
-		delete iter->second;
-		++iter;
-	}
-	NM(nodes_)->clear();
-#else
-	NLI iter = NL(nodes_)->begin();
-	while( iter != NL(nodes_)->end() )
-	{
-		delete *iter;
-		++iter;
-	}
-	NL(nodes_)->clear();
-#endif
-}
-
-size_t doc::size()
-{
-#ifdef MINIDOM_ENABLE_MAP
-	return NM(nodes_)->size();
-#else
-	return NL(nodes_)->size();
-#endif
-}
-
-node* doc::createNode( std::string& key, node* parent, bool attribute )
-{
-	node* newNode = new node;
-	newNode->doc_ = this;
-	newNode->k_ = key;
-	if( attribute )
-		parent->addAttr( newNode );
-	else
-		parent->addChild( newNode );
-#ifdef MINIDOM_ENABLE_MAP
-	NM(nodes_)->insert( make_pair( newNode->path_, newNode ) );
-#else
-	NL(nodes_)->push_back( newNode );
-#endif
-	return newNode;
 }
