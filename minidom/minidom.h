@@ -22,7 +22,6 @@
  *
  * define MINIDOM_ENABLE_DUMP to dump(save) dom into text or file
  * define MINIDOM_ENABLE_ICONV to use iconv library
- * define MINIDOM_ENABLE_MAP to use STL's map architecture
  * define MINIDOM_DEBUG to show stl types on debugging
  *
  *
@@ -56,10 +55,7 @@
 
 #include <iostream>
 #include <string>
-#ifdef MINIDOM_DEBUG
-#include <list>
 #include <vector>
-#endif
 
 #ifdef MINIDOM_ENABLE_ICONV
 	#if defined(MINIDOM_PLATFORM_WINDOWS)
@@ -76,14 +72,8 @@ namespace minidom
 	class MINIDOM_API doc;
 	class MINIDOM_API algorithm;
 
-	// hiding real-type (to export STL classes for dynamic libraries)
-#ifdef MINIDOM_DEBUG
-	typedef std::list<node*>* __NodeList;
-	typedef std::vector<node*>* __NodeVector;
-#else
-	typedef void* __NodeList;
-	typedef void* __NodeVector;
-#endif
+	typedef std::vector<node*> NodeVec;
+	typedef std::vector<node*>::iterator NVI;
 
 	class MINIDOM_API algorithm
 	{
@@ -120,11 +110,11 @@ namespace minidom
 		void print( std::ostream& stream = std::cout, 
 				bool useIndent = true, size_t indent = 0 );
 
-		node* add( const char* k, const char* v, bool bAttribute = false );
+		node* add( const char* k, const char* v = NULL, bool bAttribute = false );
 		node* add( const char* k, int v, bool bAttribute = false );
 		node* add( const char* k, double v, bool bAttribute = false );
 
-		node* add( const std::string& k, const std::string& v, bool bAttribute = false );
+		node* add( const std::string& k, const std::string& v = "", bool bAttribute = false );
 		node* add( const std::string& k, int v, bool bAttribute = false );
 		node* add( const std::string& k, double v, bool bAttribute = false );
 
@@ -132,6 +122,7 @@ namespace minidom
 		const char* toChars();
 		int toInt();
 		double toDouble();
+		void clear();
 
 	protected:
 		node();
@@ -148,8 +139,8 @@ namespace minidom
 		node* parent_;
 		node* prev_;
 		node* next_;
-		__NodeList attrList_;
-		__NodeList childList_;
+		NodeVec attrVec_;
+		NodeVec childVec_;
 	};
 
 	class MINIDOM_API selector
@@ -167,7 +158,7 @@ namespace minidom
 		size_t size();
 
 	protected:
-		__NodeVector nodeVec_;
+		NodeVec nodeVec_;
 	};
 
 	class MINIDOM_API doc : public node, public selector
@@ -187,9 +178,6 @@ namespace minidom
 		virtual ~doc();
 
 	public:
-//		void copy( doc &from );
-//		bool equal( doc &with );
-		void clear();
 		size_t size();
 		int loadString( DOCTYPE type, 
 				const char* text, 
@@ -218,12 +206,9 @@ namespace minidom
 		int writeNKV( char* buf, size_t* size, void* conv );
 		int writeHTTP( char* buf, size_t* size, void* conv );
 
-		node* createNode( std::string& key, node* parent, bool attribute = false );
 		int initIconv();
-		void* nodes_;
 		void* iconv_;
 		inline std::string& convertString( std::string& str );
-		virtual node* getNode( std::string query, size_t no = 0, bool getCount = false );
 		std::string srcEncoding_;
 		std::string dstEncoding_;
 	};
