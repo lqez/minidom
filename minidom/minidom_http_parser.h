@@ -40,13 +40,13 @@ namespace minidom
 		string strV;
 
 		node* elemNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		strK = "result";
-		node* resultNode = createNode( convertString(strK), this );
+		node* resultNode = add( convertString(strK) );
 		strK = "header";
-		node* headerNode = createNode( convertString(strK), this );
+		node* headerNode = add( convertString(strK) );
 		strK = "content";
-		node* contentNode = createNode( convertString(strK), this );
+		node* contentNode = add( convertString(strK) );
 		strK.clear();
 		
 		while( *buf )
@@ -61,7 +61,7 @@ namespace minidom
 				if( c == '\r' )
 				{
 					strK = "description";
-					elemNode = createNode( convertString(strK), resultNode );
+					elemNode = resultNode->add( convertString(strK) );
 					elemNode->v_ = convertString(strV);
 
 					resultNode->v_ = get("/result/protocol")->toString()
@@ -79,7 +79,7 @@ namespace minidom
 				else if( ( c == '/' ) || ( c == ' ' ) )
 				{
 					strK = (status==PROTOCOL)?"protocol":((status==VERSION)?"version":"code");
-					elemNode = createNode( convertString(strK), resultNode );
+					elemNode = resultNode->add( convertString(strK) );
 					elemNode->v_ = convertString(strV);
 					strK.clear();
 					strV.clear();
@@ -105,7 +105,7 @@ namespace minidom
 					strK += c;
 				else
 				{
-					elemNode = createNode( convertString(strK), headerNode );
+					elemNode = headerNode->add( convertString(strK) );
 					strK.clear();
 					status = VALUE;
 				}
@@ -140,7 +140,7 @@ namespace minidom
 					sprintf( bufSize, "%d", buf-offset );
 					strK = "offset";
 					strV = bufSize;
-					elemNode = createNode( convertString(strK), contentNode, true );
+					elemNode = contentNode->add( convertString(strK), true );
 					elemNode->v_ = convertString(strV);
 				//	int contentLength = get( "/header/Content-Length" )->toInt();
 				//	if( contentLength > 0 )

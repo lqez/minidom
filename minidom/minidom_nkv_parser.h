@@ -30,7 +30,7 @@ namespace minidom
 		while( nodes.size() != 0 )
 		{
 			node* a = nodes.front();
-			for( NLI iter = NL(a->childList_)->begin(); iter != NL(a->childList_)->end(); ++iter )
+			for( NVI iter = a->childVec_.begin(); iter != a->childVec_.end(); ++iter )
 				nodes.push_back( *iter );
 			/* Note: NKV does not support 'attribute'
 			for( NLI iter = NL(a->attrList_)->begin(); iter != NL(a->attrList_)->end(); ++iter )
@@ -103,7 +103,7 @@ namespace minidom
 		string strLength;
 
 		node* elemNode = this, *newNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		
 		while( *buf )
 		{
@@ -138,7 +138,7 @@ namespace minidom
 				strKV = tmp;
 				buf += length;
 
-				elemNode = createNode( convertString(strKV), elemNode );
+				elemNode = elemNode->add( convertString(strKV) );
 				status = EQUAL;
 				break;
 			case EQUAL:
