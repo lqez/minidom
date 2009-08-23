@@ -6,20 +6,16 @@ set( DEFAULT_ENCODING euc-kr
 	CACHE STRING "Set your default encoding."
 	)
 
-set( ENABLE_STL_MAP OFF
-	CACHE BOOL "Set on to use STL's map architecture. (improve searching speed)"
-	)
-
 set( ENABLE_ICONV OFF
 	CACHE BOOL "Set on to apply xml encodings with iconv library."
 	)
 
-set( ENABLE_DOM_DEBUG OFF
-	CACHE BOOL "Set on to examine structures of the nested nodes while debugging."
-	)
-
 set( ENABLE_DUMP OFF
 	CACHE BOOL "Set on to enable method that dump(save) dom into string or file."
+	)
+
+set( TEMP_BUFFER_SIZE 4096
+	CACHE STRING "Buffer size for element name and its value while minidom parsing & dumping."
 	)
 
 set( SUPPORT_DOCTYPE XML

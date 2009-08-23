@@ -1,27 +1,9 @@
 /*
 
-minidom - xml parser
+	minidom - xml parser
+	Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
 
-Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
-http://studio.amiryo.com/minidom
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+	See README for copyright and license information.
 
 */
 
@@ -33,19 +15,19 @@ namespace minidom
 #if defined( MINIDOM_SUPPORT_XML )
 		size_t s = 0;
 		size_t len;
-		char tmp[4096];
+		char tmp[minidom_buffer_size];
 #if defined( MINIDOM_SUPPORT_ICONV )
 		size_t len_conv;
-		char tmp_conv[8192];
+		char tmp_conv[minidom_buffer_size*2];
 #endif	
 		list<pair<node*,node*> > stack;
-		if( NL(this->childList_)->size() == 0 )
+		if( childVec_.size() == 0 )
 		{
 			*size = 0;
 			return MINIDOM_SUCCESS;
 		}
 
-		stack.push_back( make_pair(this, NL(this->childList_)->front()) );
+		stack.push_back( make_pair(this, childVec_.front()) );
 
 		while( stack.size() != 0 )
 		{
@@ -76,9 +58,9 @@ namespace minidom
 
 				c = strnpad( c, "<", 1 );
 				c = strnpad( c, i->k_.c_str(), i->k_.size() );
-				if( NL(i->attrList_)->size() > 0 )
+				if( i->attrVec_.size() > 0 )
 				{
-					for( NLI iter = NL(i->attrList_)->begin(); iter != NL(i->attrList_)->end(); ++iter )
+					for( NVI iter = i->attrVec_.begin(); iter != i->attrVec_.end(); ++iter )
 					{
 						c = strnpad( c, " ", 1 );
 						c = strnpad( c, (*iter)->k_.c_str(), (*iter)->k_.size() );
@@ -94,9 +76,9 @@ namespace minidom
 				c = strnpad( c, i->v_.c_str(), i->v_.size() );
 
 				stack.back().second = i->next();
-				if( NL(i->childList_)->size() > 0 )
+				if( i->childVec_.size() > 0 )
 				{
-					stack.push_back( make_pair( i, NL(i->childList_)->front() ) );
+					stack.push_back( make_pair( i, i->childVec_.front() ) );
 					c = strnpad( c, MINIDOM_LINEFEED, sizeof(MINIDOM_LINEFEED)-1 );
 				}
 				else
@@ -166,7 +148,7 @@ namespace minidom
 
 		node* elemNode = this;
 		node* attrNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		
 		while( *buf )
 		{
@@ -183,7 +165,7 @@ namespace minidom
 			case ELEMENT_NAME:
 				if( ( c == ' ' ) || ( c == '\t' ) || ( c  == '>' ) )
 				{
-					elemNode = createNode( convertString(strKey), elemNode );
+					elemNode = elemNode->add( convertString(strKey) );
 					status = ( c == '>' )?TEXT:ATTRIBUTE_NAME;
 					strKey = "";
 					strValue = "";
@@ -207,7 +189,7 @@ namespace minidom
 			case ATTRIBUTE_NAME:
 				if( ( c == '=' ) || ( ( ( c == ' ' ) || ( c == '>' ) ) && ( strKey.size() != 0 ) ) )
 				{
-					attrNode = createNode( convertString(strKey), elemNode, true );
+					attrNode = elemNode->add( convertString(strKey), "", true );
 					if( c == ' ' )
 						status = ATTRIBUTE_NAME;
 					else if( c == '>' )

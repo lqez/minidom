@@ -1,32 +1,14 @@
 /*
 
-minidom - nkv parser
+	minidom - nkv parser
+	Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
 
-	nkv means 'Numbered Key=Value format'.
-	Example:
-		#:KEY=#:VALUE&...
-		2:id=4:lqez&8:password=...
+		nkv means 'Numbered Key=Value format'.
+		Example:
+			#:KEY=#:VALUE&...
+			2:id=4:lqez&8:password=...
 
-Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
-http://studio.amiryo.com/minidom
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+	See README for copyright and license information.
 
 */
 
@@ -38,17 +20,17 @@ namespace minidom
 #if defined( MINIDOM_SUPPORT_NKV )
 		size_t s = 0;
 		size_t len;
-		char tmp[4096];
+		char tmp[minidom_buffer_size];
 #if defined( MINIDOM_SUPPORT_ICONV )
 		size_t len_conv;
-		char tmp_conv[8192];
+		char tmp_conv[minidom_buffer_size*2];
 #endif
 		list<node*> nodes;
 		nodes.push_back( this );
 		while( nodes.size() != 0 )
 		{
 			node* a = nodes.front();
-			for( NLI iter = NL(a->childList_)->begin(); iter != NL(a->childList_)->end(); ++iter )
+			for( NVI iter = a->childVec_.begin(); iter != a->childVec_.end(); ++iter )
 				nodes.push_back( *iter );
 			/* Note: NKV does not support 'attribute'
 			for( NLI iter = NL(a->attrList_)->begin(); iter != NL(a->attrList_)->end(); ++iter )
@@ -114,14 +96,14 @@ namespace minidom
 		char c;
 
 		size_t length = 0;
-		char tmp[4096];
+		char tmp[minidom_buffer_size];
 		bool bError = false;
 		bool bEnd = false;
 		string strKV;
 		string strLength;
 
 		node* elemNode = this, *newNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		
 		while( *buf )
 		{
@@ -156,7 +138,7 @@ namespace minidom
 				strKV = tmp;
 				buf += length;
 
-				elemNode = createNode( convertString(strKV), elemNode );
+				elemNode = elemNode->add( convertString(strKV) );
 				status = EQUAL;
 				break;
 			case EQUAL:
