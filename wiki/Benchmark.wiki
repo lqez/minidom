@@ -1,0 +1,20 @@
+#summary Benchmark with other xml parsers
+#labels Featured
+
+= Introduction =
+This document contains the result of the benchmark for 3 xml parsers - libxml2, tinyxml and minidom.
+
+= Benchmark method =
+Read and parse a big xml file(4.4MB) 5 times per each parser and calculate the average time in milliseconds.
+(xml file was created by 'junkxml.cpp' in minidom unit test source : http://minidom.googlecode.com/svn/trunk/tests/junkxml.cpp )
+
+= Environment =
+Apple Mac Mini / Intel Core Duo 1.66Ghz / Mac OS X Leopard 10.5.8
+libxml2 - 2.6.30, Mac port from http://www.explain.com.au/oss/libxml2xslt.html
+tinyxml - 2.5.3, from http://sourceforge.net/projects/tinyxml
+minidom - from "branch for faster minidom at googlecode"
+
+= Result =
+libxml2 : 483.4 ms
+tinyxml : 912.0 ms
+minidom : 858.0 ms
