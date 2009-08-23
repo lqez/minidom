@@ -1,27 +1,9 @@
 /*
 
-minidom - json parser
+	minidom - json parser
+	Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
 
-Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
-http://studio.amiryo.com/minidom
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+	See README for copyright and license information.
 
 */
 
@@ -34,19 +16,19 @@ namespace minidom
 		size_t s = 0;
 		size_t len;
 		int nBracketing = 0;
-		char tmp[4096];
+		char tmp[minidom_buffer_size];
 #if defined( MINIDOM_SUPPORT_ICONV )
 		size_t len_conv;
-		char tmp_conv[8192];
+		char tmp_conv[minidom_buffer_size*2];
 #endif
 		list<pair<node*,node*> > stack;
-		if( NL(this->childList_)->size() == 0 )
+		if( childVec_.size() == 0 )
 		{
 			*size = 0;
 			return MINIDOM_SUCCESS;
 		}
 
-		stack.push_back( make_pair(this, NL(this->childList_)->front()) );
+		stack.push_back( make_pair(this, childVec_.front()) );
 
 		while( stack.size() != 0 )
 		{
@@ -84,9 +66,9 @@ namespace minidom
 					c = strnpad( c, "\"", 1 );
 					c = strnpad( c, ":", 1 );
 
-					if( NL(i->childList_)->size() == 0 )
+					if( i->childVec_.size() == 0 )
 						if( i->next() )
-							if( NL(i->next()->childList_)->size() == 0 )
+							if( i->next()->childVec_.size() == 0 )
 								if( i->k_ == i->next()->k_ )
 								{
 									c = strnpad( c, "[", 1 );
@@ -117,9 +99,9 @@ namespace minidom
 
 					stack.back().second = i->next();
 
-					if( NL(i->childList_)->size() > 0 )
+					if( i->childVec_.size() > 0 )
 					{
-						stack.push_back( make_pair( i, NL(i->childList_)->front() ) );
+						stack.push_back( make_pair( i, i->childVec_.front() ) );
 						c = strnpad( c, " {", 2 );
 					}
 					else
@@ -197,7 +179,7 @@ namespace minidom
 		string oldK;
 
 		node* elemNode = this, *newNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		
 		while( *buf )
 		{
@@ -269,7 +251,7 @@ namespace minidom
 					{
 						if( status == KEY )
 							oldK = strKV;
-						newNode = createNode( convertString(oldK), elemNode );
+						newNode = elemNode->add( convertString(oldK) );
 						if( status == KEY )
 						{
 							if( c == ':' )

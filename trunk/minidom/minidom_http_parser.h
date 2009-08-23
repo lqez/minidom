@@ -1,27 +1,9 @@
 /*
 
-minidom - http header parser
+	minidom - http header parser
+	Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
 
-Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
-http://studio.amiryo.com/minidom
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+	See README for copyright and license information.
 
 */
 
@@ -58,13 +40,13 @@ namespace minidom
 		string strV;
 
 		node* elemNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		strK = "result";
-		node* resultNode = createNode( convertString(strK), this );
+		node* resultNode = add( convertString(strK) );
 		strK = "header";
-		node* headerNode = createNode( convertString(strK), this );
+		node* headerNode = add( convertString(strK) );
 		strK = "content";
-		node* contentNode = createNode( convertString(strK), this );
+		node* contentNode = add( convertString(strK) );
 		strK.clear();
 		
 		while( *buf )
@@ -79,7 +61,7 @@ namespace minidom
 				if( c == '\r' )
 				{
 					strK = "description";
-					elemNode = createNode( convertString(strK), resultNode );
+					elemNode = resultNode->add( convertString(strK) );
 					elemNode->v_ = convertString(strV);
 
 					resultNode->v_ = get("/result/protocol")->toString()
@@ -97,7 +79,7 @@ namespace minidom
 				else if( ( c == '/' ) || ( c == ' ' ) )
 				{
 					strK = (status==PROTOCOL)?"protocol":((status==VERSION)?"version":"code");
-					elemNode = createNode( convertString(strK), resultNode );
+					elemNode = resultNode->add( convertString(strK) );
 					elemNode->v_ = convertString(strV);
 					strK.clear();
 					strV.clear();
@@ -123,7 +105,7 @@ namespace minidom
 					strK += c;
 				else
 				{
-					elemNode = createNode( convertString(strK), headerNode );
+					elemNode = headerNode->add( convertString(strK) );
 					strK.clear();
 					status = VALUE;
 				}
@@ -158,7 +140,7 @@ namespace minidom
 					sprintf( bufSize, "%d", buf-offset );
 					strK = "offset";
 					strV = bufSize;
-					elemNode = createNode( convertString(strK), contentNode, true );
+					elemNode = contentNode->add( convertString(strK), true );
 					elemNode->v_ = convertString(strV);
 				//	int contentLength = get( "/header/Content-Length" )->toInt();
 				//	if( contentLength > 0 )

@@ -11,6 +11,7 @@ foreach( DOCTYPE ${SUPPORT_DOCTYPE} )
 			xml_load.cpp
 			xml_get.cpp
 			xml_query.cpp
+			xml_big.cpp
 			)
 		if( ENABLE_DUMP )
 			set( ITEMS
