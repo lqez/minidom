@@ -22,13 +22,13 @@ namespace minidom
 		char tmp_conv[minidom_buffer_size*2];
 #endif
 		list<pair<node*,node*> > stack;
-		if( NL(this->childList_)->size() == 0 )
+		if( childVec_.size() == 0 )
 		{
 			*size = 0;
 			return MINIDOM_SUCCESS;
 		}
 
-		stack.push_back( make_pair(this, NL(this->childList_)->front()) );
+		stack.push_back( make_pair(this, childVec_.front()) );
 
 		while( stack.size() != 0 )
 		{
@@ -66,9 +66,9 @@ namespace minidom
 					c = strnpad( c, "\"", 1 );
 					c = strnpad( c, ":", 1 );
 
-					if( NL(i->childList_)->size() == 0 )
+					if( i->childVec_.size() == 0 )
 						if( i->next() )
-							if( NL(i->next()->childList_)->size() == 0 )
+							if( i->next()->childVec_.size() == 0 )
 								if( i->k_ == i->next()->k_ )
 								{
 									c = strnpad( c, "[", 1 );
@@ -99,9 +99,9 @@ namespace minidom
 
 					stack.back().second = i->next();
 
-					if( NL(i->childList_)->size() > 0 )
+					if( i->childVec_.size() > 0 )
 					{
-						stack.push_back( make_pair( i, NL(i->childList_)->front() ) );
+						stack.push_back( make_pair( i, i->childVec_.front() ) );
 						c = strnpad( c, " {", 2 );
 					}
 					else
@@ -179,7 +179,7 @@ namespace minidom
 		string oldK;
 
 		node* elemNode = this, *newNode = NULL;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		
 		while( *buf )
 		{
@@ -251,7 +251,7 @@ namespace minidom
 					{
 						if( status == KEY )
 							oldK = strKV;
-						newNode = createNode( convertString(oldK), elemNode );
+						newNode = elemNode->add( convertString(oldK) );
 						if( status == KEY )
 						{
 							if( c == ':' )

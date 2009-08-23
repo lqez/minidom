@@ -21,13 +21,13 @@ namespace minidom
 		char tmp_conv[minidom_buffer_size*2];
 #endif
 		list<pair<node*,node*> > stack;
-		if( NL(this->childList_)->size() == 0 )
+		if( childVec_.size() == 0 )
 		{
 			*size = 0;
 			return MINIDOM_SUCCESS;
 		}
 
-		stack.push_back( make_pair(this, NL(this->childList_)->front()) );
+		stack.push_back( make_pair(this, childVec_.front()) );
 
 		while( stack.size() != 0 )
 		{
@@ -49,8 +49,8 @@ namespace minidom
 					sprintf( tmp, "[%s]%s", i->k_.c_str(), MINIDOM_LINEFEED );
 
 				stack.back().second = i->next();
-				if( NL(i->childList_)->size() > 0 )
-					stack.push_back( make_pair( i, NL(i->childList_)->front() ) );
+				if( i->childVec_.size() > 0 )
+					stack.push_back( make_pair( i, i->childVec_.front() ) );
 			}
 
 			len = strlen(tmp);
@@ -105,7 +105,7 @@ namespace minidom
 		string strLength;
 
 		node* elemNode = this;
-		NV(nodeVec_)->push_back( this );
+		nodeVec_.push_back( this );
 		
 		while( *buf )
 		{
@@ -121,7 +121,7 @@ namespace minidom
 					{
 						if( status == KEY )
 						{
-							elemNode = createNode( convertString(strKV), elemNode );
+							elemNode = elemNode->add( convertString(strKV) );
 							strKV.clear();
 
 							if( c == ']' )

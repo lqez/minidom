@@ -21,13 +21,13 @@ namespace minidom
 		char tmp_conv[minidom_buffer_size*2];
 #endif	
 		list<pair<node*,node*> > stack;
-		if( NL(this->childList_)->size() == 0 )
+		if( childVec_.size() == 0 )
 		{
 			*size = 0;
 			return MINIDOM_SUCCESS;
 		}
 
-		stack.push_back( make_pair(this, NL(this->childList_)->front()) );
+		stack.push_back( make_pair(this, childVec_.front()) );
 
 		while( stack.size() != 0 )
 		{
@@ -58,9 +58,9 @@ namespace minidom
 
 				c = strnpad( c, "<", 1 );
 				c = strnpad( c, i->k_.c_str(), i->k_.size() );
-				if( NL(i->attrList_)->size() > 0 )
+				if( i->attrVec_.size() > 0 )
 				{
-					for( NLI iter = NL(i->attrList_)->begin(); iter != NL(i->attrList_)->end(); ++iter )
+					for( NVI iter = i->attrVec_.begin(); iter != i->attrVec_.end(); ++iter )
 					{
 						c = strnpad( c, " ", 1 );
 						c = strnpad( c, (*iter)->k_.c_str(), (*iter)->k_.size() );
@@ -76,9 +76,9 @@ namespace minidom
 				c = strnpad( c, i->v_.c_str(), i->v_.size() );
 
 				stack.back().second = i->next();
-				if( NL(i->childList_)->size() > 0 )
+				if( i->childVec_.size() > 0 )
 				{
-					stack.push_back( make_pair( i, NL(i->childList_)->front() ) );
+					stack.push_back( make_pair( i, i->childVec_.front() ) );
 					c = strnpad( c, MINIDOM_LINEFEED, sizeof(MINIDOM_LINEFEED)-1 );
 				}
 				else

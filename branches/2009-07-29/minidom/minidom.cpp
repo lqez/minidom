@@ -123,12 +123,18 @@ void node::clear()
 
 	NVI iterA = attrVec_.begin();
 	while( iterA != attrVec_.end() )
+	{
 		delete( *iterA );
+		++iterA;
+	}
 	attrVec_.clear();
 
 	NVI iterC = childVec_.begin();
 	while( iterC != childVec_.end() )
+	{
 		delete( *iterC );
+		++iterC;
+	}
 	childVec_.clear();
 }
 
@@ -472,8 +478,6 @@ doc::doc()
 
 doc::~doc()
 {
-	clear();
-
 #ifdef MINIDOM_ENABLE_ICONV
 	if( iconv_ )
 		iconv_close( iconv_ );
