@@ -104,6 +104,7 @@ namespace minidom
 		node* lastAttr();
 
 		node* get( const std::string& path, size_t no = 0 );
+		size_t size( bool cascade = false );
 		size_t count( const std::string& path );
 		/* 'print' function is not safe on dynamic library.
 			use it with your own risk. */

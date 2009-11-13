@@ -42,7 +42,7 @@
 #endif
 
 #ifdef MINIDOM_BUFFER_SIZE
-	const size_t minidom_buffer_size = atoi(MINIDOM_BUFFER_SIZE);
+	const size_t minidom_buffer_size = MINIDOM_BUFFER_SIZE;
 #else
 	const size_t minidom_buffer_size = 4096;
 #endif
@@ -222,6 +222,22 @@ void node::addAttr( node* attr )
 node* node::get( const std::string& path, size_t no )
 {
 	return getNode( path, no, false );
+}
+
+size_t node::size( bool cascade )
+{
+	if( cascade == false )
+		return childVec_.size();
+
+	size_t total = 1;
+
+	NVI iterC = childVec_.begin();
+	while( iterC != childVec_.end() )
+	{
+		total += (*iterC)->size();
+		++iterC;
+	}
+	return total;
 }
 
 size_t node::count( const std::string& path )
@@ -482,6 +498,19 @@ doc::~doc()
 	if( iconv_ )
 		iconv_close( iconv_ );
 #endif
+}
+
+size_t doc::size()
+{
+	size_t total = 0;
+
+	NVI iterC = childVec_.begin();
+	while( iterC != childVec_.end() )
+	{
+		total += (*iterC)->size( true );
+		++iterC;
+	}
+	return total;
 }
 
 #ifdef MINIDOM_ENABLE_ICONV
