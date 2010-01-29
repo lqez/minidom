@@ -19,8 +19,8 @@ dom.print( std::cout );
 
 == Get a node ==
 {{{
-dom.get( "author/first-name" )->ToChars();
-dom.get( "/files/count" )->ToInt();
+dom.get( "author/first-name" )->toChars();
+dom.get( "/files/count" )->toInt();
 }}}
 
 == XPath-like query ==
@@ -45,7 +45,7 @@ size_t books = s.size();
 int totalpages = 0;
 
 while( books-- )
-	totalpages += s.at(books)->get( "pagecount" )->ToInt();
+	totalpages += s.at(books)->get( "pagecount" )->toInt();
 
 dom.add( "totalpages", totalpages );
 }}}
