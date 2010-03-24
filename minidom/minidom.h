@@ -53,6 +53,7 @@
 	#define MINIDOM_API
 #endif /* MINIDOM_PLATFORM_WINDOWS */
 
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
