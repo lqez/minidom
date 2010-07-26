@@ -40,10 +40,10 @@ namespace minidom
 			{
 				if( s == 0 )
 					sprintf( tmp, "%d:%s=%d:%s",
-						a->k_.size(), a->k_.c_str(), a->v_.size(), a->v_.c_str() );
+						(int)a->k_.size(), a->k_.c_str(), (int)a->v_.size(), a->v_.c_str() );
 				else
 					sprintf( tmp, "&%d:%s=%d:%s",
-						a->k_.size(), a->k_.c_str(), a->v_.size(), a->v_.c_str() );
+						(int)a->k_.size(), a->k_.c_str(), (int)a->v_.size(), a->v_.c_str() );
 
 				len = strlen(tmp);
 #if defined( MINIDOM_SUPPORT_ICONV )

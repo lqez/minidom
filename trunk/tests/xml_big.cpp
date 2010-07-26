@@ -2,9 +2,8 @@
 #include "../minidom/minidom_error.h"
 #include "testutil.h"
 #include <time.h>
-#if defined(MINIDOM_PLATFORM_WINDOWS)
+#include <sys/types.h>
 #include <sys/stat.h>
-#endif
 
 
 int xml_big( int argc, char * argv [] )
@@ -18,8 +17,8 @@ int xml_big( int argc, char * argv [] )
 #endif
 	{
 /*
-		Create 'big.xml' on tests directory before running the test.
-		Use 'junkxml.cpp' to create a big junk xml file.
+		Create 'big.xml' in 'tests' directory before running this test.
+		Note: Use 'junkxml.cpp' to create a big-junk-xml file.
 */
 		return 0;
 	}

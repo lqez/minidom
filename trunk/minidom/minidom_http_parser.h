@@ -137,7 +137,7 @@ namespace minidom
 			case CONTENT:
 				{
 					char bufSize[64];
-					sprintf( bufSize, "%d", buf-offset );
+					sprintf( bufSize, "%d", (int)(buf-offset) );
 					strK = "offset";
 					strV = bufSize;
 					elemNode = contentNode->add( convertString(strK), true );
