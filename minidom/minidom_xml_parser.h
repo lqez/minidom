@@ -1,7 +1,7 @@
 /*
 
 	minidom - xml parser
-	Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
+	Copyright (c) 2009, 2010 Park Hyun woo(ez.amiryo@gmail.com)
 
 	See README for copyright and license information.
 

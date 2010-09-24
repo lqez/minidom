@@ -2,7 +2,7 @@ cmake_minimum_required ( VERSION 2.6 )
 
 project ( minidom )
 
-set( DEFAULT_ENCODING euc-kr
+set( DEFAULT_ENCODING utf-8
 	CACHE STRING "Set your default encoding."
 	)
 

@@ -1,7 +1,7 @@
 /*
 
 	minidom - nkv parser
-	Copyright (c) 2009 Park Hyun woo(ez@amiryo.com)
+	Copyright (c) 2009, 2010 Park Hyun woo(ez.amiryo@gmail.com)
 
 		nkv means 'Numbered Key=Value format'.
 		Example:
