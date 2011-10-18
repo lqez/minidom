@@ -4,9 +4,9 @@
 
 int xml_utf8_to_euckr( int argc, char * argv [] )
 {
-	minidom::doc dom;
-	CHECK_EQUAL( dom.loadFile( minidom::doc::XML, "utf8.xml", "euc-kr" ), MINIDOM_SUCCESS ); 
-	dom.print( cout, true );
-	CHECK_EQUAL_STR( dom.get( "/text/hangul" )->toChars(), "한글" );
-	return 0;
+    minidom::doc dom;
+    CHECK_EQUAL( dom.loadFile( minidom::doc::XML, "utf8.xml", "euc-kr" ), MINIDOM_SUCCESS ); 
+    dom.print( cout, true );
+    CHECK_EQUAL_STR( dom.get( "/text/hangul" )->toChars(), "한글" );
+    return 0;
 }
