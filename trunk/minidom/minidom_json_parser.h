@@ -186,28 +186,23 @@ namespace minidom
                 if( c == ',' )
                 {
                     if( !newNode->array_ ){
-                        std::cout << "newNode is not array" << std::endl;
                         status = KEY;
                     }
                     else
                     {
-                        std::cout << "newNode is an array" << std::endl;
                         newNode = elemNode->add( newNode->k_ );
-
                         status = VALUE_OR_BRACKET;
                     }
                     break;
                 }
                 else if( c == '}' )
                 {
-                    std::cout << "dict end." << std::endl;
                     if(newNode != NULL) newNode = newNode->parent_;
                     elemNode = elemNode->parent_;
                     break;
                 }
                 else if( c == ']' )
                 {
-                    std::cout << "array end." << std::endl;
                     break;
                 }
                 break;
@@ -220,7 +215,6 @@ namespace minidom
 
                 if( c == '{' )
                 {
-                    std::cout << "dict begins." << std::endl;
                     if( newNode != NULL )
                         elemNode = newNode;
                     status = KEY;
@@ -237,7 +231,6 @@ namespace minidom
                         break;
                     else if( c == '[' )
                     {
-                        std::cout << "array begins." << std::endl;
                         newNode->array_ = true;
                         status = VALUE_OR_BRACKET;
                         break;
@@ -257,7 +250,6 @@ namespace minidom
                     {
                         oldK = strKV;
                         newNode = elemNode->add( convertString(oldK) );
-                        std::cout << "key : " << strKV << std::endl;
                         if( c == ':' )
                             status = VALUE_OR_BRACKET;
                         else
@@ -267,7 +259,6 @@ namespace minidom
                     if( status == VALUE )
                     {
                         newNode->v_ = convertString(strKV);
-                        std::cout << "value : " << strKV << std::endl;
                         status = COMMA;
                     }
                     strKV.clear();
