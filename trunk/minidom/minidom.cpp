@@ -101,7 +101,7 @@ bool algorithm::reverse_compare( const string& dst, const string& src, size_t ju
 }
 
 node::node()
-:next_(0),prev_(0),parent_(0)
+:array_(false),parent_(0),prev_(0),next_(0)
 {
 }
 
@@ -371,7 +371,7 @@ selector::~selector()
 
 node* selector::at( size_t i )
 {
-    if( ( i < 0 ) || ( i >= nodeVec_.size() ) )
+    if( i >= nodeVec_.size() )
         return NULL;
     return (nodeVec_)[i];
 }
