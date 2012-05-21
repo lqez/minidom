@@ -135,6 +135,7 @@ namespace minidom
         std::string path_;
         std::string k_;
         std::string v_;
+        bool array_;
 
         doc* doc_;
         node* parent_;

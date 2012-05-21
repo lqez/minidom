@@ -13,6 +13,11 @@
 	phoneNumbers	: [
 		"212 555-1234",
 		"646 555-4567"
-	]
+	],
+
+    follower       : [
+          { "name":Kate, age: "31" },
+          { name:Cindy, age:22 }
+    ]
 
 }

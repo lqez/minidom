@@ -4,6 +4,7 @@
     See README for copyright and license information.
 
 */
+#include <sstream>
 
 namespace minidom
 {
@@ -167,12 +168,9 @@ namespace minidom
         int status = VALUE_OR_BRACKET;
         char c;
 
-        size_t length = 0;
         char quot = 0;
         bool bError = false;
         bool bEnd = false;
-        bool bArrayMode = false;
-        bool bBeginArray = false;
         string strKV;
         string oldK;
 
@@ -187,20 +185,29 @@ namespace minidom
             case COMMA:
                 if( c == ',' )
                 {
-                    if( !bArrayMode )
+                    if( !newNode->array_ ){
+                        std::cout << "newNode is not array" << std::endl;
                         status = KEY;
+                    }
                     else
+                    {
+                        std::cout << "newNode is an array" << std::endl;
+                        newNode = elemNode->add( newNode->k_ );
+
                         status = VALUE_OR_BRACKET;
+                    }
                     break;
                 }
                 else if( c == '}' )
                 {
+                    std::cout << "dict end." << std::endl;
+                    if(newNode != NULL) newNode = newNode->parent_;
                     elemNode = elemNode->parent_;
                     break;
                 }
                 else if( c == ']' )
                 {
-                    bArrayMode = false;
+                    std::cout << "array end." << std::endl;
                     break;
                 }
                 break;
@@ -213,6 +220,7 @@ namespace minidom
 
                 if( c == '{' )
                 {
+                    std::cout << "dict begins." << std::endl;
                     if( newNode != NULL )
                         elemNode = newNode;
                     status = KEY;
@@ -229,9 +237,9 @@ namespace minidom
                         break;
                     else if( c == '[' )
                     {
-                        status = VALUE;
-                        bArrayMode = true;
-                        bBeginArray = true;
+                        std::cout << "array begins." << std::endl;
+                        newNode->array_ = true;
+                        status = VALUE_OR_BRACKET;
                         break;
                     }
                     else if( ( c == '"' ) || ( c == '\'' ) )
@@ -242,27 +250,24 @@ namespace minidom
                 }
 
                 if( ( ( quot && c == quot ) 
-                    || ( !quot && ( ( c == ' ' ) || ( c == ',' ) || ( c == ':' ) || ( c == '\r' ) || ( c == '\n') ) ) ) && ( strKV.size() > 0 ) )
+                    || ( !quot && ( ( c == ' ' ) || ( c == ',' ) || ( c == ':' ) || ( c == '\r' ) || ( c == '\t' ) || ( c == '\n') ) ) ) && ( strKV.size() > 0 ) )
                 {
                     quot = 0;
-                    if( ( status == KEY ) || ( bArrayMode && !bBeginArray ) )
+                    if( status == KEY )
                     {
-                        if( status == KEY )
-                            oldK = strKV;
+                        oldK = strKV;
                         newNode = elemNode->add( convertString(oldK) );
-                        if( status == KEY )
-                        {
-                            if( c == ':' )
-                                status = VALUE_OR_BRACKET;
-                            else
-                                status = COLON;
-                        }
+                        std::cout << "key : " << strKV << std::endl;
+                        if( c == ':' )
+                            status = VALUE_OR_BRACKET;
+                        else
+                            status = COLON;
                     }
 
                     if( status == VALUE )
                     {
                         newNode->v_ = convertString(strKV);
-                        bBeginArray = false;
+                        std::cout << "value : " << strKV << std::endl;
                         status = COMMA;
                     }
                     strKV.clear();
@@ -275,7 +280,9 @@ namespace minidom
                 }
                 break;
             case COLON:
-                if( c != ':' )
+                if( ( c == ' ' ) || ( c == '\t' ) || ( c == '\r' ) || ( c == '\n') )
+                    break;
+                else if( c != ':' )
                 {
                     bError = true;
                     break;
